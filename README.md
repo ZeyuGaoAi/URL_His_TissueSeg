@@ -11,6 +11,9 @@ Thus, we design three contrastive learning tasks with multi-granularity views (f
 - (3) a pixel-level task to encourage similar representations of different tissue components within a local region, i.e., encoding the spatial smoothness.
 
 ## Set Up Environment
+```bash
+conda env create -f environment.yml
+```
 
 ## Dataset
 - Download the BCTS dataset from [this link](https://github.com/PathologyDataScience/BCSS).
