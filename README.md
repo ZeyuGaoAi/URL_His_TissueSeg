@@ -26,7 +26,7 @@ For detailed configuration instructions, see `config.py` and `ft_config.py`.
 ### Pre-training
 Setup `config.py`;
 ```bash
-python -m torch.distributed.launch --nproc_per_node=4 --master_port 120520 main-distribute.py --gpus=0,1,2,4
+python -m torch.distributed.launch --nproc_per_node=4 --master_port 120520 main-distribute.py --gpus=0,1,2,3
 ```
 ### Fine-tuning
 Setup `ft_config.py`;
