@@ -40,6 +40,7 @@ def pixel_acc(pred, label):
         acc = acc_sum.float() / (pixel_sum.float() + 1e-10)
         return acc
 
+# supervised loss for fine-tuning
 def calc_sl_loss(pred, target, metrics, tissue_type_dict):
     loss = torch.nn.CrossEntropyLoss()(pred, target)
 
@@ -64,6 +65,7 @@ def calc_sl_loss(pred, target, metrics, tissue_type_dict):
     
     return loss
 
+# supervised loss for validation
 def calc_sl_loss_val(pred, target, metrics, tissue_type_dict):
     loss = torch.nn.CrossEntropyLoss()(pred, target)
 
@@ -92,6 +94,7 @@ def calc_sl_loss_val(pred, target, metrics, tissue_type_dict):
 
     return loss
 
+# pre-training loss for common contrastive, i.e., SimCLR
 def calc_gc_loss(outputs, metrics, cfg):
     outputs_norm = outputs / outputs.norm(dim=1)[:, None]
     affinity_matrix = torch.mm(outputs_norm, outputs_norm.t())
@@ -116,6 +119,7 @@ def calc_gc_loss(outputs, metrics, cfg):
     metrics['loss_gc'] += loss_gc.data.cpu().numpy() * batch_size
     return loss_gc
 
+# pre-training loss for the proposed image-level contrastive learning
 def calc_nc_loss(outputs, metrics, cfg):
     outputs1, outputs2 = outputs
     s, b, c = outputs1.shape
@@ -146,6 +150,7 @@ def calc_nc_loss(outputs, metrics, cfg):
     metrics['loss_nc'] += loss_nc.data.cpu().numpy() * b * s
     return loss_nc
 
+# pre-training loss for the proposed superpixel-level contrastive learning
 def calc_dc_loss_sp(outputs, sps, metrics, cfg):
     outputs1, outputs2 = outputs
     sps1, sps2 = sps
@@ -213,6 +218,7 @@ def calc_dc_loss_sp(outputs, sps, metrics, cfg):
     metrics['loss_dc'] += loss_dc.data.cpu().numpy() * b
     return loss_dc
 
+# pre-training loss for the proposed superpixel-level & pixel-level contrastive learning
 def calc_dc_loss_spp(outputs, sps, metrics, cfg):
     outputs1, outputs2 = outputs
     sps1, sps2 = sps
@@ -317,7 +323,7 @@ def calc_dc_loss_spp(outputs, sps, metrics, cfg):
     metrics['loss_dc'] += loss_dc.data.cpu().numpy() * b
     return loss_dc
 
-
+# pre-training loss for the proposed pixel-level contrastive learning
 def calc_dc_loss_pix(outputs, sps, metrics, cfg):
     outputs1, outputs2 = outputs
     sps1, sps2 = sps
@@ -415,85 +421,6 @@ def calc_dc_loss_pix(outputs, sps, metrics, cfg):
     metrics['loss_px'] += loss_px.data.cpu().numpy()
     metrics['loss_dc'] += loss_dc.data.cpu().numpy() * b
     return loss_dc
-
-def calc_dc_loss(outputs, sps, metrics, cfg):
-    outputs1, outputs2 = outputs
-    sps1, sps2 = sps
-    s, b, c, w, h = outputs1.shape
-    loss_dc = 0
-
-    def get_sps_features(outputs, sps, repeat_sps_list, sps_feature_list):
-        pos_list = []
-        target_pos_list = []
-        for si in range(s): # for each mag image with different mag
-            one_sps = sps[si, bi, ...] # w, h
-            one_outputs = outputs[si, bi, ...] # c, w, h
-            one_sps_feature_list = []
-            for spi in range(repeat_sps_list.size(0)):
-                sp_index = torch.where(one_sps==repeat_sps_list[spi])
-                if sp_index[0].size(0) == 0:
-                    continue
-                sp_feature = one_outputs[:, sp_index[0], sp_index[1]]
-                sp_feature = torch.mean(sp_feature, -1)
-                one_sps_feature_list.append(sp_feature)
-                pos_list.append(spi)
-                if si == 0:
-                    target_pos_list.append(spi)
-            sps_feature_list = torch.cat([sps_feature_list, torch.stack(one_sps_feature_list)], 0)
-        return sps_feature_list, pos_list, target_pos_list
-
-    def get_loss_per_sps(repeat_sps_list, affinity_matrix, pos_list, target_pos_list, index):
-        loss_dc_sp = 0
-        
-        for spi in range(len(target_pos_list)):
-            cos_smi_sp = affinity_matrix[:, spi+index]
-
-            e_all = torch.sum(cos_smi_sp) - cos_smi_sp[spi+index]
-
-            e_sim = 0
-            sp_indexes = torch.where(pos_list==target_pos_list[spi])
-            for spj in sp_indexes[0]:
-                if spj != (spi+index):
-                    e_sim += cos_smi_sp[spj]
-            loss_dc_sp += -torch.log(e_sim/e_all)
-        return loss_dc_sp/len(target_pos_list)
-        
-
-    for bi in range(b): # for each case
-
-        target_sps1 = sps1[0,bi,...] # w, h
-        target_sps2 = sps2[0,bi,...] # w, h
-
-        target_sps_list1 = torch.unique(target_sps1)
-        target_sps_list2 = torch.unique(target_sps2)
-
-        # find same sps in two target lists
-        repeat_sps_list = torch.stack([sp for sp in target_sps_list1 if sp in target_sps_list2]).cuda()
-
-        sps_feature_list1 = torch.empty((0, c)).cuda()
-        sps_feature_list2 = torch.empty((0, c)).cuda()
-
-        sps_feature_list1, pos_list1, target_pos_list1 = get_sps_features(outputs1, sps1, repeat_sps_list, sps_feature_list1)
-        sps_feature_list2, pos_list2, target_pos_list2 = get_sps_features(outputs2, sps2, repeat_sps_list, sps_feature_list2)
-
-        sps_feature_list_all = torch.cat([sps_feature_list1, sps_feature_list2], 0)
-        sps_features_norm = sps_feature_list_all / sps_feature_list_all.norm(dim=1)[:, None]
-        affinity_matrix = torch.mm(sps_features_norm, sps_features_norm.t())
-        affinity_matrix = torch.exp(affinity_matrix/cfg.temperature)
-        
-        pos_list = pos_list1 + pos_list2
-        pos_list = torch.Tensor(pos_list)
-        
-        loss_dc1 = get_loss_per_sps(repeat_sps_list, affinity_matrix, pos_list, target_pos_list1, 0)
-        loss_dc2 = get_loss_per_sps(repeat_sps_list, affinity_matrix, pos_list, target_pos_list2, len(pos_list1))
-
-        loss_dc += (loss_dc1 + loss_dc2)
-    
-    loss_dc = loss_dc / b
-    
-    metrics['loss_dc'] += loss_dc.data.cpu().numpy() * b
-    return loss_dc
-
 
 def print_metrics(metrics, epoch_samples, phase):
     outputs = []

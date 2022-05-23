@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 
-from loss import calc_sl_loss, calc_sl_loss_val, calc_gc_loss, calc_nc_loss, calc_dc_loss, print_metrics, calc_dc_loss_sp, calc_dc_loss_spp, calc_dc_loss_pix
+from loss import calc_sl_loss, calc_sl_loss_val, calc_gc_loss, calc_nc_loss, print_metrics, calc_dc_loss_sp, calc_dc_loss_spp, calc_dc_loss_pix
 
 from utils import rm_n_mkdir
 from models import ResNetBackBone, ResNetUNet, ResNetUNetHead, ResNetUNetHeadOneStage
