@@ -13,12 +13,13 @@ Thus, we design three contrastive learning tasks with multi-granularity views (f
 ## Set Up Environment
 
 ## Dataset
-Download the BCTS dataset from [this link](https://github.com/PathologyDataScience/BCSS).
-Download the GCTS dataset from [this link](https://dataset.chenli.group/).
-The pre-training datasets, BCPT and GCPT are too large to upload, Please download from the [GDC portal](https://portal.gdc.cancer.gov/) directly. 
+- Download the BCTS dataset from [this link](https://github.com/PathologyDataScience/BCSS).
+- Download the GCTS dataset from [this link](https://dataset.chenli.group/).
+- The pre-training datasets, BCPT and GCPT are too large to upload, Please download from the [GDC portal](https://portal.gdc.cancer.gov/) directly. 
 
 ## Usage
 For detailed configuration instructions, see `config.py` and `ft_config.py`.
+
 ### Pre-training
 Setup `config.py`;
 ```bash
