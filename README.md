@@ -1,7 +1,7 @@
 # URL_His_TissueSeg
-The source code of paper: # Unsupervised Representation Learning for Tissue Segmentation in Histopathological Images: From Global to Local Contrast
+The source code of paper: **Unsupervised Representation Learning for Tissue Segmentation in Histopathological Images: From Global to Local Contrast**
 
-![URL_TS](./Tasks_Intro.pdf)
+![URL_TS](./task_info.png)
 
 Our framework is enlightened by a domain-specific cue: different tissues are composed by different cells and extracellular matrices.
 Thus, we design three contrastive learning tasks with multi-granularity views (from global to local) for encoding necessary features into representations without accessing annotations.
