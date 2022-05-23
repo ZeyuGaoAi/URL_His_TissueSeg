@@ -12,7 +12,7 @@ Thus, we design three contrastive learning tasks with multi-granularity views (f
 
 ## Set Up Environment
 ```bash
-conda env create -f environment.yml
+conda env create -f environment.yaml
 ```
 
 ## Dataset
