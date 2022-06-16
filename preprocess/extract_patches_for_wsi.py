@@ -89,4 +89,4 @@ if __name__ == '__main__':
     for index in tqdm(range(0,len(file_list))):
         file_path = file_list[index]
         cut_patches_from_wsi(file_path, output_folder, mask_folder,
-                             size=2000, step=2000, rate=0.6, output_size=512)
+                             size=10000, step=10000, rate=0.6, output_size=10000)
