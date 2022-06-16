@@ -23,6 +23,12 @@ conda env create -f environment.yaml
 ## Usage
 For detailed configuration instructions, see `config.py` and `ft_config.py`.
 
+### Pre-processing
+1. Generating Binary Mask for WSIs `./preprocess/back_ground_filter_for_wsi.py`.
+2. Extracting Large Image Patches (10000x10000) from WSIs (no-overlapping) `./preprocess/extract_patches_for_wsi.py`.
+3. Extracting Small Image Patches (512x512) and Converting the format of Image Patches from png to npy `./preprocess/Extract_Patches_Own_data.ipynb`.
+4. Generating Superpixel Maps for each image patch `./preprocess/Gen_Sp_Map.ipynb`.
+
 ### Pre-training
 Setup `config.py`;
 ```bash
