@@ -1,5 +1,7 @@
 # URL_His_TissueSeg
-The source code of paper: **Unsupervised Representation Learning for Tissue Segmentation in Histopathological Images: From Global to Local Contrast**
+The source code of paper in TMI: **Unsupervised Representation Learning for Tissue Segmentation in Histopathological Images: From Global to Local Contrast**
+
+[Link](https://ieeexplore.ieee.org/document/9830779)
 
 ![URL_TS](./Tasks_Info.png)
 
