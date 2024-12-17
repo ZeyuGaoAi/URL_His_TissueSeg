@@ -19,7 +19,7 @@ conda env create -f environment.yaml
 
 ## Dataset
 - Download the BCTS dataset from [this link](https://github.com/PathologyDataScience/BCSS).
-- Download the GCTS dataset from [this link](https://sites.google.com/view/aipath-dataset/home/gastric-cancer-segmentation).
+- Download the GCTS dataset from [zeyugao/GastricSemanticSegmentation](https://huggingface.co/datasets/zeyugao/GastricSemanticSegmentation).
 - The pre-training datasets, BCPT and GCPT are too large to upload, Please download from the [GDC portal](https://portal.gdc.cancer.gov/) directly. 
 
 ## Usage
